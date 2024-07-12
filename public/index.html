@@ -1,0 +1,575 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Van der Pol denkleminin olasılıksal evrim yöntemi ile çözümü için veritabanı oluşturma</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- DataTables Bootstrap 5 Responsive CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css">
+    <link rel="shortcut icon" href="https://kuvve.com/favicon.ico">
+    <style>
+        .CodeMirror-lines {
+            padding-right: 20px !important; 
+        }
+       .nav-item{
+           margin-left: 5px;
+       }
+       #Icerik{
+           min-height: 400px;
+       }
+       .navbar{
+           border-bottom: solid 1px #ccc;
+       }
+       @media screen and (max-width: 992px) {
+          .nav-item{
+               margin-bottom: 5px;
+           }
+       }
+    </style>
+
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <div class="container-lg">
+        <!-- Logo veya başlık metni -->
+        <a class="navbar-brand" href="/">M.OZTURK</a>
+        <!-- Hamburger menü butonu -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Navbar içerikleri -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <button id="viewCppCode" class="btn btn-primary" >C++ Code</button>
+            </li>
+            <li class="nav-item">
+              <button id="viewCppOutput" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#POPUP">Run Code</button>
+            </li>
+            <li class="nav-item">
+              <button id="viewResults" class="btn btn-success" onclick="sonuclar()">Db Result</button>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#POPUP" onclick="parameters_form()">Parameters</button>
+            </li>
+            <li class="nav-item">
+              <button id="viewResults" class="btn btn-danger" onclick="about()">About</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container-lg" style="margin-top:65px;">
+        <div class="alert alert-warning" role="alert" id="summary">
+          
+        </div>
+    </div>
+    <div class="container-lg mt-5" id="Icerik">
+        
+    </div>
+    <div class="container-lg mt-5" id="footer">
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <div class="col-md-4 d-flex align-items-center">
+              <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
+                <svg class="bi" width="30" height="24"><use xlink:href="#bootstrap"/></svg>
+              </a>
+              <span class="mb-3 mb-md-0 text-body-secondary">&copy; 2024 Mustafa Öztürk </span>
+            </div>
+        
+            <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+              <li class="ms-3"><a class="text-body-secondary" href="mailto:info@mustafaozturk.dev">info@mustafaozturk.dev</a></li>
+            </ul>
+        </footer>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="POPUP" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modal_title">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="modal_content">
+            
+          </div>
+          <div class="modal-footer">
+              <p id="popup_footer"></p>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="POPUP1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modal_title1">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="modal_content1">
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="POPUP2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modal_title2">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="modal_content2">
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+ 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <!-- CodeMirror JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    
+    <!-- CodeMirror C++ Mode -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <!-- DataTables Bootstrap 5 JS -->
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <!-- DataTables Responsive JS -->
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap5.min.js"></script>
+   
+    <!-- Your custom JavaScript -->
+    <script>
+        const spinerPrimary = `<div style="display: flex; justify-content: center; align-items: center;"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
+        function toggleModal(modalId, show) {
+          const modalElement = document.getElementById(modalId);
+          if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement, {
+              keyboard: false // Klavye ile kapatmayı devre dışı bırak
+            });
+            
+            if (show) {
+              modal.show();
+            } else {
+              modal.hide();
+            }
+          } else {
+            console.error('Modal elementi bulunamadı:', modalId);
+          }
+        }
+        
+        function get_output_content() {
+            // AJAX isteği ile sunucudan JSON verilerini çek
+            $.ajax({
+                url: '/api',  // API URL'si
+                type: 'POST',
+                contentType: 'application/json',  // Gönderilen verinin içeriğini JSON olarak belirt
+                data: JSON.stringify({ action: "getOutputContent" }),  // Gönderilecek JSON verisi
+                success: function(data) {
+                    document.getElementById('modal_content').innerHTML = data;
+                },
+                error: function() {
+                    alert('Form verileri yüklenirken bir hata oluştu.');
+                }
+            });
+        }
+        
+        function parameters() {
+            // AJAX isteği ile sunucudan JSON verilerini çek
+            $.ajax({
+                url: '/api',  // API URL'si
+                type: 'POST',
+                contentType: 'application/json',  // Gönderilen verinin içeriğini JSON olarak belirt
+                data: JSON.stringify({ action: "getValues" }),  // Gönderilecek JSON verisi
+                success: function(data) {
+                    const html = `Son sorgu parametreleri[ Iterasyon = ${data.iterasyon} | Mu = ${data.mu} | Başlangıç Değeri = (${data.vanderPolInitVal1}) | (${data.vanderPolInitVal2}) ]`;
+                    document.getElementById('summary').innerHTML = html;
+                },
+                error: function() {
+                    alert('Form verileri yüklenirken bir hata oluştu.');
+                }
+            });
+        }
+        
+        function getUser() {
+            // AJAX isteği ile sunucudan JSON verilerini çek
+            $.ajax({
+                url: '/api',  // API URL'si
+                type: 'POST',
+                contentType: 'application/json',  // Gönderilen verinin içeriğini JSON olarak belirt
+                data: JSON.stringify({ action: "getUser" }),  // Gönderilecek JSON verisi
+                success: function(data) {
+                    //console.log('User response:', data);
+                },
+                error: function() {
+                    alert('Form verileri yüklenirken bir hata oluştu.');
+                }
+            });
+        }
+        
+        $(document).ready(function() {
+            // Sayfa yüklendiğinde AJAX isteğini başlat
+            parameters();
+            getUser();
+            about();
+            
+            $('#viewCppCode').click(function() {
+                // Modal başlığını ayarla
+                $('#modal_title2').html("C++ Kod İçeriği");
+                $('#modal_content2').html(spinerPrimary);
+                // Modal gösterildiğinde AJAX isteği yap ve CodeMirror'ı başlat
+                $('#POPUP2').on('shown.bs.modal', function () {
+                    $.ajax({
+                        url: '/api',  // API URL'si
+                        type: 'POST',
+                        contentType: 'application/json',  // Gönderilen verinin içeriğini JSON olarak belirt
+                        data: JSON.stringify({ action: "getCode" }),  // Gönderilecek JSON verisi
+                        success: function(data) {
+                            $('#modal_content2').html(""); // Önceki içeriği temizle
+                            var editor = CodeMirror(document.getElementById('modal_content2'), {
+                                value: data,
+                                mode: "text/x-c++src",
+                                theme: "default",
+                                lineNumbers: true,
+                                readOnly: true, // Sadece okunabilir yap
+                                lineWrapping: true // Satır kaydırma özelliğini etkinleştir
+                            });
+                            editor.setSize("100%", "100%");
+                            editor.refresh();
+                            editor.focus();
+                            editor.setCursor({line: 0, ch: 0}); // İlk satırın başına kursoru yerleştir
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.error('AJAX hatası: ' + textStatus);
+                        }
+                    });
+                });
+                // Modalı göster
+                $('#POPUP2').modal('show');
+            });
+            
+            
+            $('#viewCppOutput').click(function() {
+                // Modal başlığını ayarla
+                $('#modal_title').html("C++ Çıktı İçeriği");
+                $('#modal_content').html(spinerPrimary);
+                $.ajax({
+                    url: '/api',  // API URL'si
+                    type: 'POST',
+                    contentType: 'application/json',  // Gönderilen verinin içeriğini JSON olarak belirt
+                    data: JSON.stringify({ action: "getCppOutput" }),  // Gönderilecek JSON verisi
+                    success: function(data) {
+                        //console.log('Server response:', data);
+                        get_output_content();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('AJAX hatası: ' + textStatus);
+                    }
+                });
+            });
+            
+            
+        });//document ready finish
+        
+        function createForm(data) {
+            var formHtml = `
+                <form id="parametersForm">
+                    <div class="mb-3">
+                        <label for="iterasyon" class="form-label">Iterasyon (Adım Sayısı)</label>
+                        <input type="text" class="form-control input-restrict" id="iterasyon" name="iterasyon" value="${data.iterasyon}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mu" class="form-label">Mu  Değeri</label>
+                        <input type="text" class="form-control input-restrict" id="mu" name="mu" value="${data.mu}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="vanderPolInitVal1" class="form-label">Başlangıç Değeri 1</label>
+                        <input type="text" class="form-control input-restrict" id="vanderPolInitVal1" name="vanderPolInitVal1" value="${data.vanderPolInitVal1}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="vanderPolInitVal2" class="form-label">Başlangıç Değeri 2</label>
+                        <input type="text" class="form-control input-restrict" id="vanderPolInitVal2" name="vanderPolInitVal2" value="${data.vanderPolInitVal2}">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="submitForm()">KAYDET</button>
+                </form>
+            `;
+            return formHtml;
+        }
+
+        function parameters_form() {
+            // AJAX isteği ile sunucudan JSON verilerini çek
+            $.ajax({
+                url: '/api',  // API URL'si
+                type: 'POST',
+                contentType: 'application/json',  // Gönderilen verinin içeriğini JSON olarak belirt
+                data: JSON.stringify({ action: "getValues" }),  // Gönderilecek JSON verisi
+                success: function(data) {
+                    // Form içeriğini createForm fonksiyonu ile oluştur
+                    const formHtml = createForm(data);
+                    // Form içeriğini modal içeriğine yerleştir
+                    $('#modal_title').html("Değiştirilebilir Parametreler");
+                    $('#modal_content').html(formHtml);
+                    
+                },
+                error: function() {
+                    alert('Form verileri yüklenirken bir hata oluştu.');
+                }
+            });
+        }
+        
+        function submitForm() {
+            var formData = {};
+            $('#parametersForm .input-restrict').each(function() {
+                formData[this.name] = this.value;
+            });
+            formData['action'] = "setValues";
+            //console.log('Form Data:', formData);
+            $.ajax({
+                url: '/api',  // API URL'si
+                type: 'POST',
+                contentType: 'application/json',  // Gönderilen verinin içeriğini JSON olarak belirt
+                data: JSON.stringify(formData),  // Gönderilecek JSON verisi
+                success: function(data) {
+                    if(data.success){
+                       console.log('success:', data);
+                       parameters();
+                       $('#POPUP').modal('hide');
+                       Swal.fire(
+                            "İşlem Başarılı",
+                            data.success,
+                            "success"  
+                        );
+                    }
+                    if(data.error){
+                       console.log('error:', data);
+                       Swal.fire(
+                            "Hata",
+                            data.error,
+                            "error"  
+                        );
+                    }
+                },
+                error: function() {
+                    alert('Güncelleme yaparken bir hata oluştu.');
+                }
+            });
+        }
+        
+        function sonuclar(){
+            const table = `<table id="ode_db" class="table table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Iterasyon</th>
+                            <th>Mu</th>
+                            <th>Başlangıç-1</th>
+                            <th>Başlangıç-2</th>
+                            <th>mapStacking</th>
+                            <th>initialVector</th>
+                            <th>iterationTitle</th>
+                            <th>Ode</th>
+                            <th>Token</th>
+                            <th>ZamanDamgasi</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- DataTables buraya verileri dinamik olarak dolduracak -->
+                    </tbody>
+                </table>`;
+                $("#Icerik").html(table);
+                $('#ode_db').DataTable({
+                "responsive": true,
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 100, 
+                "ajax": {
+                    "url": "/api",
+                    "type": "POST",
+                    "contentType": 'application/json',
+                    "data": function(d) {
+                        return JSON.stringify({ action: "oleFromDataTable", ...d });
+                    }
+                },
+                "order": [[0, 'desc']],
+                "columns": [
+                    { "data": "Id" },
+                    { "data": "iterasyon" },
+                    { "data": "mu" },
+                    { "data": "baslangic1" },
+                    { "data": "baslangic2" },
+                    { "data": "mapStacking" },
+                    { "data": "initialVector" },
+                    { "data": "iterationTitle" },
+                    { "data": "ode" },
+                    { "data": "token" },
+                    { "data": "ZamanDamgasi" },
+                    { "data": "islem" }
+                ]
+            });
+        }
+        
+        function db_iterasyon(ode,ode_info){
+            console.log(ode_info);
+            toggleModal("POPUP1",true);
+            const table = `<table id="iterasyon_db" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>iterationInfo</th>
+                    <th>iterationCount</th>
+                    <th>iterationT</th>
+                    <th>iterationVal</th>
+                    <th>ZamanDamgasi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- DataTables buraya verileri dinamik olarak dolduracak -->
+            </tbody>
+            </table>`;
+            $('#modal_title1').html(`odeId= ${ode} | ${ode_info}`);
+            $("#modal_content1").html(table);
+            $('#iterasyon_db').DataTable({
+                "responsive": true,
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 100, 
+                "ajax": {
+                    "url": "/api",
+                    "type": "POST",
+                    "contentType": 'application/json',
+                    "data": function(d) {
+                        return JSON.stringify({ action: "iterationFromDataTable", odeId: ode, ...d });
+                    }
+                },
+                "columns": [
+                    { "data": "iterationInfo" },
+                    { "data": "iterationCount" },
+                    { "data": "iterationT" },
+                    { "data": "iterationVal" },
+                    { "data": "ZamanDamgasi" }
+                 
+                ]
+            });
+        }
+        
+        function db_rho(ode,ode_info){
+            console.log(ode_info);
+            toggleModal("POPUP1",true);
+            const table = `<table id="rho_db" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>rhoStep</th>
+                    <th>rho</th>
+                    <th>rhoVal</th>
+                    <th>ZamanDamgasi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- DataTables buraya verileri dinamik olarak dolduracak -->
+            </tbody>
+            </table>`;
+            $('#modal_title1').html(`odeId= ${ode} | ${ode_info}`);
+            $("#modal_content1").html(table);
+            $('#rho_db').DataTable({
+                "responsive": true,
+                "processing": true,
+                "serverSide": true,
+                "pageLength": 100, 
+                "ajax": {
+                    "url": "/api",
+                    "type": "POST",
+                    "contentType": 'application/json',
+                    "data": function(d) {
+                        return JSON.stringify({ action: "rhoFromDataTable", odeId: ode, ...d });
+                    }
+                },
+                "columns": [
+                    { "data": "rhoStep" },
+                    { "data": "rho" },
+                    { "data": "rhoVal" },
+                    { "data": "ZamanDamgasi" }
+                 
+                ]
+            });
+        }
+        
+        function about() {
+            // AJAX isteği ile sunucudan JSON verilerini çek
+            $.ajax({
+                url: '/api',  // API URL'si
+                type: 'POST',
+                contentType: 'application/json',  // Gönderilen verinin içeriğini JSON olarak belirt
+                data: JSON.stringify({ action: "about" }),  // Gönderilecek JSON verisi
+                success: function(data) {
+                    $("#Icerik").html(data.text);
+                },
+                error: function() {
+                    alert('Form verileri yüklenirken bir hata oluştu.');
+                }
+            });
+        }
+        
+        $(document).on('input', '.input-restrict', function() {
+            $(this).val($(this).val().replace(/[^0-9,]/g, ''));
+        });
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarCollapse = document.getElementById('navbarNav');
+        
+            // Navbar collapse öğesini Bootstrap'in animasyonlu kapatma fonksiyonunu kullanarak kapat
+            function closeNavbarCollapse() {
+                if (!navbarCollapse.classList.contains('collapsing')) {
+                    new bootstrap.Collapse(navbarCollapse, { toggle: false }).hide();
+                }
+            }
+        
+            // Hamburger menüsü açıkken, menü dışında bir yere tıklandığında menüyü kapat
+            document.addEventListener('click', function (event) {
+                const clickInside = navbarCollapse.contains(event.target) || navbarToggler.contains(event.target);
+                if (!clickInside) {
+                    closeNavbarCollapse();
+                }
+            });
+        
+            // Menü içindeki herhangi bir butona tıklanırsa menüyü kapat
+            navbarCollapse.addEventListener('click', function (event) {
+                if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A') {
+                    closeNavbarCollapse();
+                }
+            });
+        });
+
+
+        
+    </script>
+</body>
+</html>
