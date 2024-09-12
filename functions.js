@@ -416,7 +416,7 @@ const functions = {
     },
     about: async function(req, res){
         const text = `<h1 class="text-center mt-3">Proje Hakkında</h1>
-<p class="text-center">Bu proje, Van der Pol osilatörünün sayısal çözümlerinin olasılıksal evrim yöntemleri kullanılarak elde edilmesi ve bu çözümlerin veritabanı sistemleri aracılığıyla yönetilmesi süreçlerini kapsamlı bir şekilde incelemektedir. Çalışmada, Dr. Öğr. Üyesi Çoşar Gözükırmızı tarafından geliştirilen ve GitHub üzerinden erişilebilen "<a href='https://github.com/cosargozukirmizi/space-extension-of-explicit-ODEs/tree/main' target='_blank'>space-extension-of-explicit-ODEs</a>" projesindeki metotlar temel alınmıştır. Bu yöntemler, C++ programlama dili kullanılarak uygulanmış ve elde edilen veriler, Node.js, Web teknolojileri ve modern veritabanı teknikleri ile işlenmiştir.
+<p class="text-center">Bu proje, Van der Pol osilatörünün sayısal çözümlerinin olasılıksal evrim yöntemleri kullanılarak elde edilmesi ve bu çözümlerin veritabanı sistemleri aracılığıyla yönetilmesi süreçlerini kapsamlı bir şekilde incelemektedir. Çalışmada, Dr. Öğr. Üyesi Coşar Gözükırmızı tarafından geliştirilen ve GitHub üzerinden erişilebilen "<a href='https://github.com/cosargozukirmizi/space-extension-of-explicit-ODEs/tree/main' target='_blank'>space-extension-of-explicit-ODEs</a>" projesindeki metotlar temel alınmıştır. Bu yöntemler, C++ programlama dili kullanılarak uygulanmış ve elde edilen veriler, Node.js, Web teknolojileri ve modern veritabanı teknikleri ile işlenmiştir.
 Tez kapsamında geliştirilen sistem, büyük veri setlerinin etkin bir şekilde işlenip saklanabilmesi için bir çerçeve sunmakta ve Van der Pol denklemlerinin çözümlerini daha erişilebilir kılmaktadır.</p>`;
         const response = {
             text:text
